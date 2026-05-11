@@ -3,548 +3,1409 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NPS ESG Watch — 국민연금 ESG 시민감시 대시보드 (프로토타입)</title>
-<meta name="description" content="가입자 알권리를 위한 국민연금 기금감시 ESG 리스크 조기탐지 대시보드. 박용환 / 경인블루저널 / 2026 연금행동 신진연구자 학술제 제출용 프로토타입.">
+<title>NPS ESG Watch · Vol. 01 / Issue 01 — 가입자 알권리를 위한 국민연금 기금감시 옵서버토리</title>
+<meta name="description" content="공적연금강화국민행동 신진연구자 학술제 2026 제출용 시민감시 대시보드 프로토타입. 박용환 / 경인블루저널.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 <style>
   :root {
-    --navy: #0f2342;
-    --navy-2: #1f3a68;
-    --blue: #1f4ea6;
-    --blue-soft: #e8eef7;
-    --red: #c0392b;
-    --amber: #9a6900;
-    --amber-soft: #fff3cd;
-    --green: #1e8449;
-    --gray: #6b7c93;
-    --bg: #f6f9fc;
-    --card: #ffffff;
-    --border: #d8e1ee;
+    /* — Editorial palette: Civic Ink — */
+    --ink: #0d1117;
+    --ink-soft: #1c2330;
+    --paper: #f4efe6;
+    --paper-warm: #fbf7ee;
+    --paper-cream: #ede4d3;
+    --rule: #c9bfae;
+    --rule-soft: #ddd3c2;
+    --gold: #c8961e;
+    --gold-bright: #e8b73b;
+    --gold-faint: rgba(200,150,30,0.10);
+    --blue-deep: #14365e;
+    --blue-mid: #2d5a8d;
+    --crimson: #a32634;
+    --crimson-bright: #c8364a;
+    --teal: #1f6f6a;
+    --slate: #4a5460;
+    --slate-soft: #6c7682;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body {
-    font-family: "Pretendard", "Malgun Gothic", "맑은 고딕", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
-    color: #1a1a1a;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-  a { color: var(--blue); text-decoration: none; }
-  a:hover { text-decoration: underline; }
 
-  /* 상단 배너 */
-  .top-banner {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
-    color: #fff;
-    padding: 24px 32px;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-feature-settings: 'kern' 1, 'liga' 1, 'ss01' 1; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    /* subtle paper grain */
+    background-image:
+      radial-gradient(rgba(13,17,23,0.025) 1px, transparent 1px),
+      radial-gradient(rgba(200,150,30,0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 1px;
   }
-  .top-banner .row {
-    max-width: 1240px;
+
+  /* Selection */
+  ::selection { background: var(--gold-bright); color: var(--ink); }
+
+  /* — Typography utilities — */
+  .serif {
+    font-family: 'Fraunces', 'Noto Serif KR', Georgia, serif;
+    font-feature-settings: 'ss01' 1, 'ss02' 1;
+  }
+  .mono { font-family: 'IBM Plex Mono', 'Courier New', monospace; }
+  .tnum { font-variant-numeric: tabular-nums; }
+  .smallcaps { font-feature-settings: 'smcp' 1; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ============================================
+     MASTHEAD — 시민 저널 매스트헤드
+     ============================================ */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: 28px 0 0 0;
+    background:
+      linear-gradient(180deg, transparent 0%, transparent 100%),
+      var(--paper-warm);
+  }
+
+  .masthead-strip {
+    max-width: 1320px;
     margin: 0 auto;
+    padding: 0 40px 14px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 0.5px solid var(--rule);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 500;
   }
-  .top-banner h1 {
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 6px;
-  }
-  .top-banner .sub {
-    font-size: 13px;
-    opacity: 0.85;
-  }
-  .top-banner .meta {
-    text-align: right;
-    font-size: 12px;
-    opacity: 0.85;
-  }
-  .top-banner .meta strong { color: #ffd166; }
-
-  .proto-tag {
+  .masthead-strip .dot {
     display: inline-block;
-    background: #ffd166;
-    color: #0f2342;
-    font-weight: 700;
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 12px;
-    margin-left: 8px;
-    letter-spacing: 0.04em;
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    margin: 0 10px;
+    vertical-align: 1px;
+  }
+  .masthead-strip .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--crimson);
+    font-weight: 600;
+  }
+  .masthead-strip .live::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--crimson);
+    animation: pulse 1.8s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
   }
 
-  /* 컨테이너 */
-  .container {
-    max-width: 1240px;
+  .masthead-main {
+    max-width: 1320px;
     margin: 0 auto;
-    padding: 24px 32px 60px;
+    padding: 36px 40px 32px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 32px;
+    align-items: end;
+  }
+  .masthead-edition {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    text-align: left;
+    max-width: 130px;
+  }
+  .masthead-edition .label {
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
   }
 
-  /* KPI 스트립 */
-  .kpi-strip {
+  .masthead-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-variation-settings: 'opsz' 144, 'SOFT' 30, 'WONK' 1;
+    font-size: clamp(48px, 7vw, 92px);
+    line-height: 0.88;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    text-align: center;
+  }
+  .masthead-title .amp {
+    font-style: italic;
+    color: var(--crimson);
+    font-variation-settings: 'opsz' 144, 'WONK' 1;
+    margin: 0 -4px;
+  }
+
+  .masthead-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    text-align: right;
+    max-width: 150px;
+  }
+  .masthead-meta .label {
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+  }
+
+  .masthead-tagline {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 40px 24px;
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--slate);
+    border-bottom: 6px double var(--ink);
+    padding-bottom: 24px;
+  }
+
+  /* ============================================
+     HEADLINE BAND
+     ============================================ */
+  .headline-band {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 56px 40px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    align-items: start;
+    border-bottom: 1px solid var(--rule);
+  }
+  .headline-band .kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--crimson);
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  .headline-band .kicker::before {
+    content: '§';
+    margin-right: 8px;
+    color: var(--gold);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+  }
+  .headline-band h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-variation-settings: 'opsz' 144;
+    font-size: clamp(34px, 4vw, 56px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .headline-band h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--blue-deep);
+  }
+  .headline-band .deck {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--slate);
+    font-weight: 400;
+  }
+  .headline-band .deck strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .headline-band .byline {
+    margin-top: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+  }
+  .headline-band .byline .author {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ============================================
+     INDICATORS (KPI STRIP) — Editorial-style
+     ============================================ */
+  .indicators {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 40px 40px 50px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 28px;
+    gap: 0;
+    border-bottom: 1px solid var(--rule);
   }
-  .kpi {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
+  .indicator {
+    padding: 4px 32px 4px 0;
+    border-right: 1px solid var(--rule);
     position: relative;
-    overflow: hidden;
   }
-  .kpi::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; bottom: 0;
-    width: 4px;
-    background: var(--blue);
+  .indicator:nth-child(n+2) { padding-left: 32px; }
+  .indicator:last-child { border-right: none; }
+  .indicator .ind-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--slate);
+    font-weight: 500;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-  .kpi.alert::before { background: var(--red); }
-  .kpi.warn::before { background: var(--amber); }
-  .kpi.ok::before { background: var(--green); }
-  .kpi .label {
-    font-size: 12px;
-    color: var(--gray);
-    margin-bottom: 6px;
-  }
-  .kpi .value {
-    font-size: 28px;
+  .indicator .ind-label .num {
+    background: var(--ink);
+    color: var(--paper-warm);
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
     font-weight: 700;
-    color: var(--navy);
-    line-height: 1.1;
+    letter-spacing: 0;
   }
-  .kpi .delta {
-    font-size: 12px;
-    color: var(--gray);
-    margin-top: 4px;
+  .indicator .ind-value {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-variation-settings: 'opsz' 144, 'WONK' 1;
+    font-size: clamp(54px, 5vw, 78px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
   }
-  .kpi .delta.up { color: var(--red); font-weight: 600; }
-  .kpi .delta.down { color: var(--green); font-weight: 600; }
+  .indicator .ind-value .denom {
+    font-size: 26px;
+    color: var(--slate);
+    font-weight: 400;
+  }
+  .indicator .ind-value .prefix {
+    font-size: 32px;
+    color: var(--gold);
+    margin-right: 2px;
+    font-style: italic;
+  }
+  .indicator.alert .ind-value { color: var(--crimson); }
+  .indicator.alert .ind-label .num { background: var(--crimson); }
+  .indicator.warn .ind-value { color: var(--gold); }
+  .indicator.warn .ind-label .num { background: var(--gold); color: var(--ink); }
+  .indicator.ok .ind-value { color: var(--teal); }
+  .indicator.ok .ind-label .num { background: var(--teal); }
 
-  /* 모듈 그리드 */
+  .indicator .ind-delta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 0.5px dashed var(--rule);
+    letter-spacing: 0.04em;
+  }
+  .indicator .ind-delta strong { color: var(--ink); }
+  .indicator .ind-delta .arrow-up { color: var(--crimson); font-weight: 700; }
+  .indicator .ind-delta .arrow-down { color: var(--teal); font-weight: 700; }
+
+  /* ============================================
+     SECTIONS
+     ============================================ */
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .section-head {
+    padding: 50px 0 28px;
+    border-bottom: 0.5px solid var(--rule);
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+  }
+  .section-head .section-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 24px;
+    color: var(--gold);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .section-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .section-head h2 em { font-style: italic; color: var(--blue-deep); font-weight: 400; }
+  .section-head .meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--slate);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* Two-col grid */
   .modules {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 48px;
+    padding-bottom: 50px;
   }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px 24px;
-    box-shadow: 0 1px 3px rgba(15,35,66,0.04);
+
+  .module {
+    position: relative;
   }
-  .card-head {
+  .module-head {
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 0.5px solid var(--rule);
+  }
+  .module-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .module-num::before {
+    content: '';
+    width: 18px;
+    height: 1px;
+    background: var(--gold);
+    display: inline-block;
+  }
+  .module-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -0.018em;
+    margin-bottom: 6px;
+  }
+  .module-title em { font-style: italic; font-weight: 400; color: var(--blue-deep); }
+  .module-deck {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  /* MODULE 1: Risk signal table — Editorial leaderboard */
+  .signal-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .signal-table thead th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--slate);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 4px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .signal-table tbody tr {
+    border-bottom: 0.5px solid var(--rule);
+    transition: background 0.15s;
+  }
+  .signal-table tbody tr:hover { background: var(--gold-faint); }
+  .signal-table tbody td {
+    padding: 14px 4px;
+    vertical-align: top;
+  }
+  .signal-table .rank {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 28px;
+    color: var(--gold);
+    line-height: 1;
+    padding-right: 16px !important;
+    width: 40px;
+  }
+  .signal-table .firm-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .signal-table .firm-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--slate);
+    margin-top: 3px;
+  }
+  .signal-table .description {
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.4;
+    max-width: 240px;
+  }
+  .signal-table .description strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .signal-table .score {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    padding-right: 16px !important;
+  }
+  .risk-band {
+    display: inline-block;
+    padding: 2px 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 700;
+    margin-right: 6px;
+    border-radius: 1px;
+  }
+  .risk-band.high { background: var(--crimson); color: var(--paper-warm); }
+  .risk-band.mid { background: var(--gold); color: var(--ink); }
+  .risk-band.low { background: var(--teal); color: var(--paper-warm); }
+  .lead-time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--slate);
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    display: block;
+  }
+  .lead-time .num {
+    color: var(--crimson);
+    font-weight: 700;
+  }
+
+  /* MODULE 2: Divergence */
+  .divergence-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .divergence-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--slate);
+    font-weight: 600;
+    text-align: center;
+    padding: 10px 4px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .divergence-table th:first-child { text-align: left; }
+  .divergence-table td {
+    padding: 14px 4px;
+    text-align: center;
+    border-bottom: 0.5px solid var(--rule);
+    vertical-align: middle;
+  }
+  .divergence-table td:first-child { text-align: left; }
+  .divergence-table tr:hover td { background: var(--gold-faint); }
+  .divergence-table .firm {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .esg-grade {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 1px;
+    letter-spacing: 0.04em;
+    display: inline-block;
+    min-width: 38px;
+  }
+  .esg-grade.A { background: var(--teal); color: var(--paper-warm); }
+  .esg-grade.B { background: var(--blue-deep); color: var(--paper-warm); }
+  .esg-grade.C { background: var(--gold); color: var(--ink); }
+  .esg-grade.D { background: var(--crimson); color: var(--paper-warm); }
+  .gap-cell {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--crimson);
+  }
+
+  /* MODULE 4: Watch queue */
+  .watch-item {
+    padding: 18px 0 20px;
+    border-bottom: 0.5px solid var(--rule);
+  }
+  .watch-item:last-child { border-bottom: none; }
+  .watch-item .wi-head {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 12px;
+    margin-bottom: 8px;
+    gap: 12px;
   }
-  .card-head .title {
+  .watch-item .firm-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--ink);
+  }
+  .watch-item .firm-name em {
+    font-style: italic;
+    color: var(--slate);
+    font-weight: 400;
+    font-size: 14px;
+  }
+  .watch-item .body-text {
+    font-size: 13.5px;
+    color: var(--slate);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .watch-item .body-text strong { color: var(--ink); font-weight: 600; }
+  .watch-actions { display: flex; gap: 8px; }
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    padding: 8px 14px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper-warm);
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.15s;
+  }
+  .btn:hover {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn.ghost:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  /* Chart container */
+  .chart-frame {
+    background: var(--paper-warm);
+    border: 0.5px solid var(--rule);
+    border-radius: 2px;
+    padding: 20px 24px 16px;
+    position: relative;
+  }
+  .chart-frame::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 14px; height: 14px;
+    border-top: 2px solid var(--ink);
+    border-left: 2px solid var(--ink);
+  }
+  .chart-frame::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 14px; height: 14px;
+    border-bottom: 2px solid var(--ink);
+    border-right: 2px solid var(--ink);
+  }
+  .chart-wrap {
+    position: relative;
+    height: 280px;
+  }
+  .chart-caption {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--slate);
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 0.5px dashed var(--rule);
+    line-height: 1.5;
+  }
+  .chart-caption .fig {
+    font-family: 'IBM Plex Mono', monospace;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-right: 8px;
+  }
+
+  /* RADAR section (full-width) */
+  .feature-spread {
+    padding: 50px 0 60px;
+    border-top: 6px double var(--ink);
+    margin-top: 30px;
+    background: var(--paper-warm);
+    position: relative;
+  }
+  .feature-spread .inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .feature-spread .kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--crimson);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .feature-spread h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(32px, 3.8vw, 48px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 14px;
+    max-width: 800px;
+  }
+  .feature-spread h2 em {
+    font-style: italic;
+    color: var(--crimson);
+    font-weight: 400;
+  }
+  .feature-spread .deck {
+    font-family: 'Fraunces', serif;
     font-size: 16px;
-    font-weight: 700;
-    color: var(--navy);
+    color: var(--slate);
+    line-height: 1.55;
+    max-width: 720px;
+    margin-bottom: 36px;
+    font-style: italic;
   }
-  .card-head .badge {
-    font-size: 11px;
-    background: var(--blue-soft);
-    color: var(--blue);
-    padding: 3px 10px;
-    border-radius: 12px;
+  .feature-spread .deck strong {
+    color: var(--ink);
     font-weight: 600;
+    font-style: normal;
   }
-  .card-head .badge.red { background: #fde2e0; color: var(--red); }
-  .card-head .badge.amber { background: var(--amber-soft); color: var(--amber); }
-
-  /* 모듈 1: 리스크 신호 테이블 */
-  table.signal {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  table.signal th {
-    text-align: left;
-    color: var(--gray);
-    font-weight: 600;
-    padding: 8px 10px;
-    background: #f4f7fb;
-    border-bottom: 1px solid var(--border);
-  }
-  table.signal td {
-    padding: 10px;
-    border-bottom: 1px solid #eef2f8;
-  }
-  table.signal tr:last-child td { border-bottom: none; }
-  table.signal .firm { font-weight: 700; color: var(--navy); }
-  table.signal .sector { color: var(--gray); font-size: 11.5px; }
-  .risk-pill {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .risk-pill.high { background: #fde2e0; color: var(--red); }
-  .risk-pill.mid { background: var(--amber-soft); color: var(--amber); }
-  .risk-pill.low { background: #d4f1de; color: var(--green); }
-  .lead-time { font-size: 11px; color: var(--gray); }
-
-  /* 모듈 2: 평가기관 불일치 */
-  .divergence-row {
+  .radar-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1fr 0.7fr;
-    gap: 8px;
-    padding: 10px 0;
-    border-bottom: 1px solid #eef2f8;
-    font-size: 13px;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 50px;
+    align-items: start;
+  }
+  .radar-wrap { position: relative; height: 460px; }
+  .radar-readout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .readout-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
     align-items: center;
+    padding: 16px 0;
+    border-bottom: 0.5px solid var(--rule);
   }
-  .divergence-row:first-child {
-    font-weight: 700;
-    color: var(--gray);
-    font-size: 11px;
-    background: #f4f7fb;
-    padding: 8px 12px;
-    border-radius: 6px;
+  .readout-row:first-child { border-top: 1.5px solid var(--ink); }
+  .readout-row .swatch {
+    width: 12px; height: 12px;
+    border-radius: 50%;
   }
-  .divergence-row .firm { font-weight: 700; color: var(--navy); }
-  .grade {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    background: #eef2f8;
-    color: var(--navy);
+  .readout-row .fund-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
   }
-  .grade.A { background: #d4f1de; color: var(--green); }
-  .grade.B { background: var(--amber-soft); color: var(--amber); }
-  .grade.C, .grade.D { background: #fde2e0; color: var(--red); }
-  .gap-pill {
-    background: var(--navy);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 10px;
+  .readout-row .fund-name em {
+    font-style: italic;
+    color: var(--slate);
+    font-weight: 400;
+    font-size: 13px;
+    margin-left: 4px;
+  }
+  .readout-row .total-score {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .readout-row .total-score .max {
+    color: var(--slate);
+    font-weight: 400;
+    font-size: 13px;
+  }
+  .readout-row.nps {
+    background: linear-gradient(90deg, transparent 0%, var(--gold-faint) 100%);
+    padding: 18px 14px;
+    margin: 0 -14px;
+  }
+  .readout-row.nps .total-score { color: var(--crimson); }
+  .readout-row.nps::before {
+    content: '◀';
+    position: absolute;
+    margin-left: -28px;
+    color: var(--crimson);
+    font-size: 10px;
+  }
+  .pullquote {
+    margin-top: 30px;
+    padding: 24px 28px;
+    background: var(--ink);
+    color: var(--paper-warm);
+    border-left: 6px solid var(--gold);
+  }
+  .pullquote .quotemark {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 48px;
+    color: var(--gold);
+    line-height: 0.5;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .pullquote .quote-text {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 400;
+    font-style: italic;
+  }
+  .pullquote .quote-text strong {
+    background: var(--gold);
+    color: var(--ink);
+    padding: 0 4px;
+    font-weight: 600;
+    font-style: normal;
+  }
+  .pullquote .attribution {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+    margin-top: 14px;
+    font-weight: 500;
   }
 
-  /* 모듈 4: 시민감시 큐 */
-  .queue-item {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    background: #fafcff;
+  /* ============================================
+     COLOPHON (FOOTER)
+     ============================================ */
+  .colophon {
+    background: var(--ink);
+    color: var(--paper-warm);
+    padding: 60px 0 50px;
+    margin-top: 40px;
   }
-  .queue-item .firm-line {
+  .colophon .inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .colophon-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--gold);
+    margin-bottom: 36px;
+  }
+  .colophon-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    border-top: 1px solid rgba(244,239,230,0.2);
+    padding-top: 36px;
+  }
+  .colophon-col h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .colophon-col .body {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--paper-warm);
+    opacity: 0.85;
+  }
+  .colophon-col .body strong {
+    color: var(--paper-warm);
+    font-weight: 600;
+    opacity: 1;
+  }
+  .colophon-col .body a {
+    color: var(--gold-bright);
+    text-decoration: none;
+    border-bottom: 0.5px dashed var(--gold);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  .colophon-col .body a:hover { background: var(--gold); color: var(--ink); }
+  .colophon-bottom {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 0.5px solid rgba(244,239,230,0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(244,239,230,0.5);
   }
-  .queue-item .firm-name {
-    font-weight: 700;
-    color: var(--navy);
-    font-size: 14px;
-  }
-  .queue-item .signal-text {
-    font-size: 12.5px;
-    color: #444;
-    margin-bottom: 8px;
-  }
-  .queue-item .actions {
-    display: flex;
-    gap: 8px;
-  }
-  .btn {
-    background: var(--blue);
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 11.5px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .btn:hover { background: var(--navy-2); }
-  .btn.ghost {
-    background: transparent;
-    color: var(--blue);
-    border: 1px solid var(--blue);
-  }
-  .btn.ghost:hover { background: var(--blue-soft); }
-
-  /* 차트 컨테이너 */
-  .chart-wrap {
-    position: relative;
-    height: 260px;
+  .colophon-bottom .lic {
+    border: 0.5px solid rgba(244,239,230,0.3);
+    padding: 4px 8px;
   }
 
-  /* 푸터 */
-  .footer {
-    max-width: 1240px;
-    margin: 40px auto 0;
-    padding: 24px 32px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--gray);
-    border-top: 1px solid var(--border);
+  /* Page-load reveals */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  .footer strong { color: var(--navy); }
+  @keyframes reveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal-1 { animation-delay: 0.05s; }
+  .reveal-2 { animation-delay: 0.15s; }
+  .reveal-3 { animation-delay: 0.25s; }
+  .reveal-4 { animation-delay: 0.35s; }
+  .reveal-5 { animation-delay: 0.45s; }
+  .reveal-6 { animation-delay: 0.55s; }
 
-  @media (max-width: 900px) {
-    .modules { grid-template-columns: 1fr; }
-    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
-    .top-banner .row { flex-direction: column; }
-    .top-banner .meta { text-align: left; }
+  /* Responsive */
+  @media (max-width: 1000px) {
+    .modules { grid-template-columns: 1fr; gap: 40px; }
+    .indicators { grid-template-columns: repeat(2, 1fr); }
+    .indicator { border-right: none; padding: 0 0 24px; border-bottom: 0.5px solid var(--rule); margin-bottom: 24px; }
+    .indicator:nth-child(n+2) { padding-left: 0; }
+    .headline-band { grid-template-columns: 1fr; gap: 28px; }
+    .radar-grid { grid-template-columns: 1fr; }
+    .masthead-main { grid-template-columns: 1fr; text-align: center; }
+    .masthead-edition, .masthead-meta { text-align: center; max-width: none; }
+    .colophon-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .indicators { grid-template-columns: 1fr; }
+    .container { padding: 0 24px; }
+    .masthead-main { padding: 24px 24px 20px; }
+    .colophon-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<!-- 상단 배너 -->
-<header class="top-banner">
-  <div class="row">
+<!-- ============================================
+     MASTHEAD
+     ============================================ -->
+<header class="masthead">
+  <div class="masthead-strip">
     <div>
-      <h1>NPS ESG Watch <span class="proto-tag">프로토타입</span></h1>
-      <div class="sub">가입자 알권리를 위한 국민연금 기금감시 ESG 리스크 조기탐지 대시보드</div>
+      <span class="smallcaps">시민 옵서버토리</span>
+      <span class="dot"></span>
+      <span class="smallcaps">Korea National Pension Service · ESG Stewardship Watch</span>
     </div>
-    <div class="meta">
-      박용환 · 한양대학교 공학대학원 / 경인블루저널 발행인<br>
-      <strong>2026 연금행동 신진연구자 학술제 제출용</strong><br>
-      <span style="opacity:0.7;">데이터 갱신: 2026-05-11 (정적 시연용 더미 데이터)</span>
+    <div class="live"><span>Prototype Live</span></div>
+  </div>
+
+  <div class="masthead-main reveal reveal-1">
+    <div class="masthead-edition">
+      <div class="label">Edition</div>
+      Volume 01<br>
+      Issue №01<br>
+      Prototype
     </div>
+    <h1 class="masthead-title">
+      NPS<span class="amp">·</span>ESG<br>Watch
+    </h1>
+    <div class="masthead-meta">
+      <div class="label">Filed</div>
+      2026·05·11<br>
+      Seoul, KR<br>
+      박용환
+    </div>
+  </div>
+
+  <div class="masthead-tagline reveal reveal-2">
+    <em>An open civic instrument for monitoring South Korea's National Pension Service ESG stewardship — designed so that 23 million subscribers may see what is done in their name.</em>
   </div>
 </header>
 
-<main class="container">
+<!-- ============================================
+     HEADLINE
+     ============================================ -->
+<section class="headline-band">
+  <div class="reveal reveal-2">
+    <div class="kicker">Lead Story · Issue 01</div>
+    <h1>국민연금 ESG <em>스튜어드십</em>의<br>실효를 묻다</h1>
+  </div>
+  <div class="reveal reveal-3">
+    <p class="deck">
+      <strong>2,300만 가입자의 노후자산</strong>이 ESG 통합운용이라는 이름 아래 어떻게 운용되고 있는지, 그 효과와 한계를 가입자·시민단체·노동조합이 직접 검증할 수 있는 <strong>최초의 공공 모니터링 도구</strong>. AI 자연어 처리(NLP)와 라이선스 클린 공개 데이터(DART·KCGS·NPS 책임투자보고서·빅카인즈)를 결합해 의결권 시즌 직전 시민감시 캠페인의 근거자료로 즉시 활용할 수 있도록 설계되었다.
+    </p>
+    <p class="byline">
+      <span class="author">박용환</span> &nbsp;·&nbsp; 한양대학교 공학대학원 · 크리에이티브 넥서스 · 경인블루저널 &nbsp;·&nbsp; <span class="mono" style="color:var(--crimson);font-weight:600;">D-326</span> until 2027 voting season
+    </p>
+  </div>
+</section>
 
-  <!-- KPI 스트립 -->
-  <section class="kpi-strip">
-    <div class="kpi alert">
-      <div class="label">⚠️ 오늘 탐지된 ESG 리스크 신호</div>
-      <div class="value">17</div>
-      <div class="delta up">전일 대비 +4</div>
-    </div>
-    <div class="kpi warn">
-      <div class="label">📊 평가기관 불일치 워치(KOSPI200)</div>
-      <div class="value">42<span style="font-size:14px;color:var(--gray);"> / 200</span></div>
-      <div class="delta">3사 등급 격차 ≥ 2단계</div>
-    </div>
-    <div class="kpi">
-      <div class="label">🗳️ 다음 의결권 시즌까지</div>
-      <div class="value">D-326</div>
-      <div class="delta">2027-04-01 정기주총</div>
-    </div>
-    <div class="kpi ok">
-      <div class="label">👥 시민감시 신청 건수</div>
-      <div class="value">128</div>
-      <div class="delta down">최근 7일 +12</div>
-    </div>
-  </section>
+<!-- ============================================
+     INDICATORS (KPI)
+     ============================================ -->
+<section class="indicators reveal reveal-3">
+  <div class="indicator alert">
+    <div class="ind-label"><span class="num">01</span> 오늘의 ESG 리스크 신호</div>
+    <div class="ind-value tnum">17</div>
+    <div class="ind-delta"><span class="arrow-up">▲</span> 전일 대비 <strong>+4</strong> · NLP 자동 탐지</div>
+  </div>
+  <div class="indicator warn">
+    <div class="ind-label"><span class="num">02</span> 평가기관 등급 불일치 워치</div>
+    <div class="ind-value tnum">42<span class="denom">/200</span></div>
+    <div class="ind-delta">3사 등급 격차 ≥ 2단계 (KOSPI200)</div>
+  </div>
+  <div class="indicator">
+    <div class="ind-label"><span class="num">03</span> 다음 의결권 시즌까지</div>
+    <div class="ind-value tnum"><span class="prefix">D−</span>326</div>
+    <div class="ind-delta">2027·04·01 · <strong>정기주총</strong></div>
+  </div>
+  <div class="indicator ok">
+    <div class="ind-label"><span class="num">04</span> 시민감시 신청 건수</div>
+    <div class="ind-value tnum">128</div>
+    <div class="ind-delta"><span class="arrow-down">▼</span> 최근 7일 <strong>+12</strong></div>
+  </div>
+</section>
 
-  <!-- 모듈 그리드 -->
-  <section class="modules">
+<!-- ============================================
+     MODULES — Section A: Signals & Divergence
+     ============================================ -->
+<div class="container">
+  <header class="section-head reveal reveal-3">
+    <div>
+      <span class="section-num">§ A.</span>
+      <h2>오늘의 리스크 풍경 <em>— Today's risk landscape</em></h2>
+    </div>
+    <div class="meta">
+      Filed · 2026·05·11<br>
+      Source · NLP + KCGS · MSCI · Sustinvest
+    </div>
+  </header>
 
-    <!-- 모듈 1: 오늘의 ESG 리스크 신호 -->
-    <div class="card">
-      <div class="card-head">
-        <div class="title">🚨 오늘의 ESG 리스크 신호 Top 5</div>
-        <span class="badge red">NLP 자동 탐지</span>
-      </div>
-      <table class="signal">
+  <div class="modules">
+
+    <!-- M1: Risk Signal Top 5 -->
+    <article class="module reveal reveal-4">
+      <header class="module-head">
+        <div class="module-num">Module 01 · Risk Top 5</div>
+        <h3 class="module-title">오늘의 <em>ESG 리스크</em> 신호 Top 5</h3>
+        <div class="module-deck">NLP 모형(EXAONE 3.5 + ESG-Kor + BERTopic)이 DART 공시·빅카인즈 보도에서 탐지한 신호.</div>
+      </header>
+
+      <table class="signal-table">
         <thead>
           <tr>
-            <th>기업</th>
-            <th>리스크</th>
-            <th>스코어</th>
-            <th>리드타임</th>
+            <th></th>
+            <th>기업 · Issue</th>
+            <th style="text-align:right;">Risk</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td class="rank">01</td>
             <td>
-              <div class="firm">○○화학</div>
-              <div class="sector">소재 · KOSPI</div>
+              <div class="firm-name">○○화학 <em style="font-style:italic;font-weight:400;color:var(--slate);">소재·KOSPI</em></div>
+              <div class="description"><span class="risk-band high">E·환경</span>폐수 무단방류 의혹 — 환경단체 공동 성명 + 지자체 조사</div>
+              <span class="lead-time">KCGS 등급 공고일까지 <span class="num">−42일</span> 선행 탐지</span>
             </td>
-            <td>환경(E) — 폐수 무단방류 의혹</td>
-            <td><span class="risk-pill high">0.91</span></td>
-            <td><span class="lead-time">KCGS 공고 -42일</span></td>
+            <td class="score">0.91</td>
           </tr>
           <tr>
+            <td class="rank">02</td>
             <td>
-              <div class="firm">○○건설</div>
-              <div class="sector">건설 · KOSPI200</div>
+              <div class="firm-name">○○건설 <em style="font-style:italic;font-weight:400;color:var(--slate);">건설·KOSPI200</em></div>
+              <div class="description"><span class="risk-band high">S·사회</span>중대재해 산재 연쇄 — 90일간 보도 12건, 노조 성명 3건</div>
+              <span class="lead-time">KCGS 등급 공고일까지 <span class="num">−28일</span> 선행 탐지</span>
             </td>
-            <td>사회(S) — 중대재해 산재 연쇄</td>
-            <td><span class="risk-pill high">0.87</span></td>
-            <td><span class="lead-time">KCGS 공고 -28일</span></td>
+            <td class="score">0.87</td>
           </tr>
           <tr>
+            <td class="rank">03</td>
             <td>
-              <div class="firm">○○지주</div>
-              <div class="sector">금융 · KOSPI</div>
+              <div class="firm-name">○○지주 <em style="font-style:italic;font-weight:400;color:var(--slate);">금융·KOSPI</em></div>
+              <div class="description"><span class="risk-band mid">G·지배</span>총수 사익편취 의혹 — 정기주총 배당 안건 발의</div>
+              <span class="lead-time">KCGS 등급 공고일까지 <span class="num">−19일</span> 선행 탐지</span>
             </td>
-            <td>지배구조(G) — 총수 사익편취 의혹</td>
-            <td><span class="risk-pill mid">0.74</span></td>
-            <td><span class="lead-time">KCGS 공고 -19일</span></td>
+            <td class="score">0.74</td>
           </tr>
           <tr>
+            <td class="rank">04</td>
             <td>
-              <div class="firm">○○전자</div>
-              <div class="sector">전기전자 · KOSPI200</div>
+              <div class="firm-name">○○전자 <em style="font-style:italic;font-weight:400;color:var(--slate);">전기전자·KOSPI200</em></div>
+              <div class="description"><span class="risk-band mid">S·사회</span>협력사 노동권 분쟁 — 1차 협력사 파업 보도</div>
+              <span class="lead-time">KCGS 등급 공고일까지 <span class="num">−12일</span> 선행 탐지</span>
             </td>
-            <td>사회(S) — 협력사 노동권 분쟁</td>
-            <td><span class="risk-pill mid">0.68</span></td>
-            <td><span class="lead-time">KCGS 공고 -12일</span></td>
+            <td class="score">0.68</td>
           </tr>
           <tr>
+            <td class="rank">05</td>
             <td>
-              <div class="firm">○○물산</div>
-              <div class="sector">유통 · KOSPI</div>
+              <div class="firm-name">○○물산 <em style="font-style:italic;font-weight:400;color:var(--slate);">유통·KOSPI</em></div>
+              <div class="description"><span class="risk-band low">E·환경</span>탄소공시 부정확 — Scope 3 산정 방법 논란</div>
+              <span class="lead-time">KCGS 등급 공고일까지 <span class="num">−7일</span> 선행 탐지</span>
             </td>
-            <td>환경(E) — 탄소공시 부정확</td>
-            <td><span class="risk-pill low">0.55</span></td>
-            <td><span class="lead-time">KCGS 공고 -7일</span></td>
+            <td class="score">0.55</td>
           </tr>
         </tbody>
       </table>
-      <p style="font-size:11px; color:var(--gray); margin-top:10px;">
-        ※ NLP 모형(EXAONE 3.5 + ESG-Kor + BERTopic)이 DART 공시·빅카인즈 보도에서 추출한 신호. 오탐 시 시민단체 모니터 추가 검증 큐로만 분류(human-in-the-loop).
+    </article>
+
+    <!-- M2: Divergence -->
+    <article class="module reveal reveal-5">
+      <header class="module-head">
+        <div class="module-num">Module 02 · Rating Divergence</div>
+        <h3 class="module-title">평가기관 <em>등급 불일치</em> 워치</h3>
+        <div class="module-deck">KCGS · Sustinvest · MSCI letter grade 비교 — Berg et al. 2022(<em>Review of Finance</em>)의 ESG rating divergence 방법론 적용.</div>
+      </header>
+
+      <table class="divergence-table">
+        <thead>
+          <tr>
+            <th>기업</th>
+            <th>KCGS</th>
+            <th>Sustinvest</th>
+            <th>MSCI</th>
+            <th>격차</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="firm">○○화학</td>
+            <td><span class="esg-grade B">B+</span></td>
+            <td><span class="esg-grade D">D</span></td>
+            <td><span class="esg-grade B">BB</span></td>
+            <td class="gap-cell">3△</td>
+          </tr>
+          <tr>
+            <td class="firm">○○건설</td>
+            <td><span class="esg-grade B">B</span></td>
+            <td><span class="esg-grade C">C+</span></td>
+            <td><span class="esg-grade C">CCC</span></td>
+            <td class="gap-cell">2△</td>
+          </tr>
+          <tr>
+            <td class="firm">○○지주</td>
+            <td><span class="esg-grade A">A</span></td>
+            <td><span class="esg-grade B">B</span></td>
+            <td><span class="esg-grade A">A</span></td>
+            <td class="gap-cell">2△</td>
+          </tr>
+          <tr>
+            <td class="firm">○○전자</td>
+            <td><span class="esg-grade A">A+</span></td>
+            <td><span class="esg-grade A">A</span></td>
+            <td><span class="esg-grade B">BBB</span></td>
+            <td class="gap-cell">2△</td>
+          </tr>
+          <tr>
+            <td class="firm">○○카드</td>
+            <td><span class="esg-grade B">B+</span></td>
+            <td><span class="esg-grade A">A</span></td>
+            <td><span class="esg-grade C">CCC</span></td>
+            <td class="gap-cell">3△</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-family:'Fraunces',serif;font-style:italic;font-size:12px;color:var(--slate);margin-top:14px;line-height:1.5;">
+        평가기관 간 등급 격차가 ≥ 2단계인 기업은 본 연구의 NLP 모형 <strong style="font-style:normal;color:var(--ink);">우선 모니터링 대상</strong>으로 분류된다.
       </p>
+    </article>
+
+  </div>
+</div>
+
+<!-- ============================================
+     MODULES — Section B: Vote & Queue
+     ============================================ -->
+<div class="container">
+  <header class="section-head reveal reveal-3">
+    <div>
+      <span class="section-num">§ B.</span>
+      <h2>의결권의 무게 <em>— The weight of a vote</em></h2>
     </div>
-
-    <!-- 모듈 2: 평가기관 불일치 -->
-    <div class="card">
-      <div class="card-head">
-        <div class="title">📊 평가기관 등급 불일치 워치</div>
-        <span class="badge amber">KCGS · Sustinvest · MSCI</span>
-      </div>
-      <div class="divergence-row">
-        <div>기업</div><div>KCGS</div><div>Sustinvest</div><div>MSCI</div><div>격차</div>
-      </div>
-      <div class="divergence-row">
-        <div class="firm">○○화학</div>
-        <div><span class="grade B">B+</span></div>
-        <div><span class="grade D">D</span></div>
-        <div><span class="grade B">BB</span></div>
-        <div><span class="gap-pill">3단계</span></div>
-      </div>
-      <div class="divergence-row">
-        <div class="firm">○○건설</div>
-        <div><span class="grade B">B</span></div>
-        <div><span class="grade C">C+</span></div>
-        <div><span class="grade C">CCC</span></div>
-        <div><span class="gap-pill">2단계</span></div>
-      </div>
-      <div class="divergence-row">
-        <div class="firm">○○지주</div>
-        <div><span class="grade A">A</span></div>
-        <div><span class="grade B">B</span></div>
-        <div><span class="grade A">A</span></div>
-        <div><span class="gap-pill">2단계</span></div>
-      </div>
-      <div class="divergence-row">
-        <div class="firm">○○전자</div>
-        <div><span class="grade A">A+</span></div>
-        <div><span class="grade A">A</span></div>
-        <div><span class="grade B">BBB</span></div>
-        <div><span class="gap-pill">2단계</span></div>
-      </div>
-      <p style="font-size:11px; color:var(--gray); margin-top:10px;">
-        ※ 등급 격차 ≥ 2단계 기업은 NLP 모형의 우선 모니터링 대상으로 분류 (선행연구: Berg et al. 2022, <i>Review of Finance</i>).
-      </p>
+    <div class="meta">
+      2018 → 2025 패널<br>
+      DID + PSM · 2019 처치
     </div>
+  </header>
 
-    <!-- 모듈 3: NPS 의결권 패턴 -->
-    <div class="card">
-      <div class="card-head">
-        <div class="title">🗳️ NPS 의결권 패턴 (2018~2025)</div>
-        <span class="badge">DID + PSM 분석</span>
+  <div class="modules">
+
+    <!-- M3: NPS Vote Pattern -->
+    <article class="module reveal reveal-4">
+      <header class="module-head">
+        <div class="module-num">Module 03 · Vote Pattern</div>
+        <h3 class="module-title">NPS 의결권 패턴 <em>(2018→2025)</em></h3>
+        <div class="module-deck">2019년 <strong>「책임투자 활성화 방안」</strong>을 처치(treatment)로 본 이중차분(DID) + 성향점수매칭(PSM) 설계.</div>
+      </header>
+
+      <div class="chart-frame">
+        <div class="chart-wrap"><canvas id="voteChart"></canvas></div>
+        <p class="chart-caption">
+          <span class="fig">Fig. 03</span>
+          ESG 안건 반대표 비율(파랑)이 처치 시점 이후 가파르게 상승. 주주제안 가결률(녹색 점선) 동반 상승. 다만 글로벌 연기금 수준과 비교 시 격차 여전(별지 §C 참조).
+        </p>
       </div>
-      <div class="chart-wrap"><canvas id="voteChart"></canvas></div>
-      <p style="font-size:11px; color:var(--gray); margin-top:10px;">
-        ※ 2019년 「책임투자 활성화 방안」 도입(빨간 점선)을 처치(treatment)로 본 DID 설계. ESG 안건 반대표 비율이 처치 후 상승 추세.
-      </p>
-    </div>
+    </article>
 
-    <!-- 모듈 4: 시민감시 큐 -->
-    <div class="card">
-      <div class="card-head">
-        <div class="title">👥 시민감시 큐 (활성)</div>
-        <span class="badge">human-in-the-loop</span>
-      </div>
+    <!-- M4: Civic Watch Queue -->
+    <article class="module reveal reveal-5">
+      <header class="module-head">
+        <div class="module-num">Module 04 · Civic Queue</div>
+        <h3 class="module-title">시민감시 큐 <em>— Human-in-the-loop</em></h3>
+        <div class="module-deck">NLP 모형이 탐지한 신호는 자동 차단이 아닌 <strong>시민단체 모니터의 추가 검증 큐</strong>로 분류된다.</div>
+      </header>
 
-      <div class="queue-item">
-        <div class="firm-line">
-          <span class="firm-name">○○화학 — 환경(E)</span>
-          <span class="risk-pill high">High 0.91</span>
+      <div class="watch-item">
+        <div class="wi-head">
+          <div class="firm-name">○○화학 <em>— 환경(E)</em></div>
+          <span class="risk-band high">High · 0.91</span>
         </div>
-        <div class="signal-text">2026-04-22 DART 자율공시 + 5월 1일 ○○일보 보도에서 폐수 무단방류 관련 키워드 클러스터 급증. 시민단체 검증 대기 중.</div>
-        <div class="actions">
+        <p class="body-text">
+          <strong>2026·04·22</strong> DART 자율공시 + 5월 1일 ○○일보 보도에서 <strong>폐수 무단방류</strong> 관련 키워드 클러스터 급증. 시민단체(환경운동연합) 검증 대기.
+        </p>
+        <div class="watch-actions">
           <button class="btn">감시 신청</button>
           <button class="btn ghost">출처 보기</button>
         </div>
       </div>
 
-      <div class="queue-item">
-        <div class="firm-line">
-          <span class="firm-name">○○건설 — 사회(S)</span>
-          <span class="risk-pill high">High 0.87</span>
+      <div class="watch-item">
+        <div class="wi-head">
+          <div class="firm-name">○○건설 <em>— 사회(S)</em></div>
+          <span class="risk-band high">High · 0.87</span>
         </div>
-        <div class="signal-text">최근 90일간 산재 관련 보도 12건, 노동조합 성명 3건 탐지. PPA·공공운수노조 국민연금지부 검토 대기.</div>
-        <div class="actions">
+        <p class="body-text">
+          최근 90일간 <strong>산재 관련 보도 12건</strong>, 노동조합 성명 3건 탐지. PPA · 전국공공운수노조 국민연금지부 검토 대기.
+        </p>
+        <div class="watch-actions">
           <button class="btn">감시 신청</button>
           <button class="btn ghost">출처 보기</button>
         </div>
       </div>
 
-      <div class="queue-item">
-        <div class="firm-line">
-          <span class="firm-name">○○지주 — 지배구조(G)</span>
-          <span class="risk-pill mid">Mid 0.74</span>
+      <div class="watch-item">
+        <div class="wi-head">
+          <div class="firm-name">○○지주 <em>— 지배구조(G)</em></div>
+          <span class="risk-band mid">Mid · 0.74</span>
         </div>
-        <div class="signal-text">2026 정기주총 안건 중 총수 일가 배당 관련 안건 발의. 가입자·시민단체 의결권 캠페인 후보.</div>
-        <div class="actions">
+        <p class="body-text">
+          2026 정기주총 안건 중 <strong>총수 일가 배당 관련 안건</strong> 발의. 가입자 · 시민단체 의결권 캠페인 후보.
+        </p>
+        <div class="watch-actions">
           <button class="btn">감시 신청</button>
           <button class="btn ghost">출처 보기</button>
         </div>
       </div>
+    </article>
+
+  </div>
+</div>
+
+<!-- ============================================
+     FEATURE SPREAD — Global Comparison
+     ============================================ -->
+<section class="feature-spread">
+  <div class="inner">
+    <div class="reveal reveal-4">
+      <div class="kicker">§ C. The Long View · Global Benchmark</div>
+      <h2>국민연금은 다섯 축 모두에서 <em>최하위다.</em></h2>
+      <p class="deck">
+        GPFG(노르웨이) · CalPERS(미국) · ABP(네덜란드) · CPPIB(캐나다)와 비교했을 때 NPS의 ESG 거버넌스는 <strong>다섯 개 축 — 공시·의결권·관여·배제·시민감시 인터페이스 모두에서 최하위 점수</strong>를 받는다. 이 격차는 본 연구가 메우려는 정책 공백이다.
+      </p>
     </div>
 
-  </section>
+    <div class="radar-grid">
 
-  <!-- 글로벌 비교 차트 -->
-  <section class="card" style="margin-top:20px;">
-    <div class="card-head">
-      <div class="title">🌐 글로벌 연기금 ESG 거버넌스 비교 (5축 방사형)</div>
-      <span class="badge">정책 텍스트 비교분석</span>
+      <div class="chart-frame reveal reveal-5" style="background:var(--paper);">
+        <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+        <p class="chart-caption">
+          <span class="fig">Fig. 05</span>
+          5개 공적연금 5축 거버넌스 잠정 정성평가 (1~5 scale). 본 연구의 정량 검증을 통해 점수는 갱신될 예정. 출처: 각 기관 책임투자 보고서(2023~2024) · 박용환 정리.
+        </p>
+      </div>
+
+      <div class="radar-readout reveal reveal-6">
+        <div class="readout-row">
+          <span class="swatch" style="background:#14365e;"></span>
+          <div class="fund-name">GPFG <em>· 노르웨이</em></div>
+          <div class="total-score tnum">23<span class="max"> / 25</span></div>
+        </div>
+        <div class="readout-row">
+          <span class="swatch" style="background:#a32634;"></span>
+          <div class="fund-name">CalPERS <em>· 미국</em></div>
+          <div class="total-score tnum">21<span class="max"> / 25</span></div>
+        </div>
+        <div class="readout-row">
+          <span class="swatch" style="background:#c8961e;"></span>
+          <div class="fund-name">ABP <em>· 네덜란드</em></div>
+          <div class="total-score tnum">19<span class="max"> / 25</span></div>
+        </div>
+        <div class="readout-row">
+          <span class="swatch" style="background:#1f6f6a;"></span>
+          <div class="fund-name">CPPIB <em>· 캐나다</em></div>
+          <div class="total-score tnum">15<span class="max"> / 25</span></div>
+        </div>
+        <div class="readout-row nps">
+          <span class="swatch" style="background:#0d1117;"></span>
+          <div class="fund-name">NPS <em>· 한국</em></div>
+          <div class="total-score tnum">7<span class="max"> / 25</span></div>
+        </div>
+
+        <div class="pullquote">
+          <span class="quotemark">"</span>
+          <p class="quote-text">
+            가입자에게는 <strong>알 권리</strong>가, 시민단체에게는 <strong>감시할 권리</strong>가, 노동조합에게는 <strong>관여할 권리</strong>가 있다.
+          </p>
+          <p class="attribution">— 본 연구의 정책 제언, 별지 §C·D</p>
+        </div>
+      </div>
+
     </div>
-    <div class="chart-wrap" style="height:340px;"><canvas id="radarChart"></canvas></div>
-    <p style="font-size:11px; color:var(--gray); margin-top:10px;">
-      ※ GPFG(노)·CalPERS(미)·ABP(네)·CPPIB(캐)·NPS(한)의 ESG 거버넌스 5개 차원 잠정 정성평가. 본 연구에서 정량화·검증 예정. NPS는 전 축 최하위 — 본 연구의 정책 제언이 메우려는 격차.
-    </p>
-  </section>
+  </div>
+</section>
 
-</main>
+<!-- ============================================
+     COLOPHON
+     ============================================ -->
+<footer class="colophon">
+  <div class="inner">
+    <h2 class="colophon-title">An open civic instrument.</h2>
 
-<footer class="footer">
-  <p><strong>NPS ESG Watch</strong> · 박용환 · 한양대학교 공학대학원 · 경인블루저널</p>
-  <p style="margin-top:6px;">2026 연금행동 신진연구자 학술제 제출용 정적 프로토타입 (더미 데이터). MIT License · GitHub 저장소 공개 예정.</p>
-  <p style="margin-top:6px; font-size:11px;">본 대시보드는 학술제 발표 시점(2026.12)에 라이브 데이터로 갱신되며, 가입자·시민단체·노동조합이 의결권 행사 시즌(매년 3~4월)에 활용할 수 있는 형태로 운영됩니다.</p>
+    <div class="colophon-grid">
+      <div class="colophon-col">
+        <h4>Editor / Researcher</h4>
+        <p class="body">
+          <strong>박용환 朴容煥</strong><br>
+          한양대학교 공학대학원 석사 졸업<br>
+          크리에이티브 넥서스 · 경인블루저널
+        </p>
+      </div>
+      <div class="colophon-col">
+        <h4>Methodology</h4>
+        <p class="body">
+          NLP · EXAONE 3.5 + KLUE-RoBERTa<br>
+          ESG-Kor (EMNLP 2024 Findings)<br>
+          DART OpenAPI · 빅카인즈 학술 API<br>
+          KCGS 공개 등급 · NPS 책임투자보고서
+        </p>
+      </div>
+      <div class="colophon-col">
+        <h4>Source / License</h4>
+        <p class="body">
+          <a href="https://github.com/yonghwan1106/nps-esg-watch" target="_blank">github.com/yonghwan1106/nps-esg-watch</a><br>
+          MIT License · 연구 보조 자료<br>
+          학술제 발표 시점(2026·12) 라이브 갱신
+        </p>
+      </div>
+      <div class="colophon-col">
+        <h4>Submission</h4>
+        <p class="body">
+          공적연금강화국민행동 (PPA)<br>
+          신진연구자 학술제 2026<br>
+          마감 · 2026·05·29 18:00<br>
+          <a href="mailto:pension1045@gmail.com">pension1045@gmail.com</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="colophon-bottom">
+      <div>Set in Fraunces · Pretendard · IBM Plex Mono · A civic typographic stack</div>
+      <div class="lic">CC-BY-SA · Prototype Edition · 2026</div>
+    </div>
+  </div>
 </footer>
 
 <script>
-  // 모듈 3: NPS 의결권 패턴 (2018~2025)
+  // ============================================
+  // CHART 03 — NPS VOTE PATTERN (DID)
+  // ============================================
   const ctxVote = document.getElementById('voteChart').getContext('2d');
   new Chart(ctxVote, {
     type: 'line',
@@ -552,103 +1413,200 @@
       labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
       datasets: [
         {
-          label: 'ESG 안건 반대표 비율(%)',
+          label: 'ESG 안건 반대표 비율 (%)',
           data: [8.2, 11.4, 14.7, 18.3, 21.5, 23.1, 24.8, 26.2],
-          borderColor: '#1f4ea6',
-          backgroundColor: 'rgba(31, 78, 166, 0.10)',
+          borderColor: '#14365e',
+          backgroundColor: 'rgba(20, 54, 94, 0.08)',
           fill: true,
-          tension: 0.35,
-          borderWidth: 3,
+          tension: 0.32,
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: '#14365e',
+          pointBorderColor: '#fbf7ee',
+          pointBorderWidth: 1.5,
         },
         {
-          label: '주주제안 가결률(%)',
+          label: '주주제안 가결률 (%)',
           data: [3.1, 4.8, 6.2, 8.9, 11.2, 12.8, 14.1, 15.7],
-          borderColor: '#1e8449',
-          backgroundColor: 'rgba(30, 132, 73, 0.08)',
-          fill: true,
-          tension: 0.35,
-          borderWidth: 2.5,
-          borderDash: [4, 3],
+          borderColor: '#1f6f6a',
+          backgroundColor: 'rgba(31, 111, 106, 0.05)',
+          fill: false,
+          tension: 0.32,
+          borderWidth: 2,
+          borderDash: [4, 4],
+          pointRadius: 3,
+          pointBackgroundColor: '#1f6f6a',
         }
       ]
     },
     options: {
       maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 } } },
-        annotation: {}
+        legend: {
+          position: 'bottom',
+          align: 'start',
+          labels: {
+            font: { family: "'IBM Plex Mono', monospace", size: 10.5, weight: '500' },
+            color: '#0d1117',
+            usePointStyle: true,
+            pointStyle: 'rect',
+            padding: 18,
+            boxWidth: 14,
+            boxHeight: 4,
+          }
+        },
+        tooltip: {
+          backgroundColor: '#0d1117',
+          titleFont: { family: "'IBM Plex Mono', monospace", size: 11 },
+          bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
+          padding: 10,
+          borderColor: '#c8961e',
+          borderWidth: 1,
+          cornerRadius: 1,
+        }
       },
       scales: {
         y: {
           beginAtZero: true,
           max: 30,
-          ticks: { font: { size: 10 } },
-          title: { display: true, text: '비율 (%)', font: { size: 11 } }
+          ticks: {
+            font: { family: "'IBM Plex Mono', monospace", size: 10 },
+            color: '#6c7682',
+            stepSize: 5,
+            callback: function(v) { return v + '%'; }
+          },
+          grid: { color: 'rgba(13,17,23,0.05)', drawBorder: false }
         },
-        x: { ticks: { font: { size: 10 } } }
+        x: {
+          ticks: {
+            font: { family: "'IBM Plex Mono', monospace", size: 10 },
+            color: '#6c7682',
+          },
+          grid: { display: false }
+        }
       }
-    }
+    },
+    plugins: [{
+      id: 'treatmentLine',
+      beforeDraw: (chart) => {
+        const { ctx, chartArea, scales } = chart;
+        if (!chartArea) return;
+        const x = scales.x.getPixelForValue(1); // index of '2019'
+        ctx.save();
+        ctx.strokeStyle = '#a32634';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // Label
+        ctx.fillStyle = '#a32634';
+        ctx.font = "600 9.5px 'IBM Plex Mono', monospace";
+        ctx.fillText('TREATMENT · 2019', x + 6, chartArea.top + 14);
+        ctx.fillText('「책임투자 활성화 방안」', x + 6, chartArea.top + 27);
+        ctx.restore();
+      }
+    }]
   });
 
-  // 글로벌 비교 방사형
+  // ============================================
+  // CHART 05 — Global Radar
+  // ============================================
   const ctxRadar = document.getElementById('radarChart').getContext('2d');
   new Chart(ctxRadar, {
     type: 'radar',
     data: {
-      labels: ['ESG 공시', '의결권', '관여(Engagement)', '배제 정책', '시민감시'],
+      labels: ['ESG 공시', '의결권', '관여', '배제 정책', '시민감시'],
       datasets: [
         {
-          label: 'GPFG (노르웨이)',
+          label: 'GPFG · 노르웨이',
           data: [5, 5, 4, 5, 4],
-          borderColor: '#1f4ea6',
-          backgroundColor: 'rgba(31, 78, 166, 0.18)',
+          borderColor: '#14365e',
+          backgroundColor: 'rgba(20, 54, 94, 0.10)',
           borderWidth: 2,
+          pointRadius: 3,
         },
         {
-          label: 'CalPERS (미국)',
+          label: 'CalPERS · 미국',
           data: [4, 5, 5, 3, 4],
-          borderColor: '#c0392b',
-          backgroundColor: 'rgba(192, 57, 43, 0.15)',
+          borderColor: '#a32634',
+          backgroundColor: 'rgba(163, 38, 52, 0.08)',
           borderWidth: 2,
+          pointRadius: 3,
         },
         {
-          label: 'ABP (네덜란드)',
+          label: 'ABP · 네덜란드',
           data: [4, 4, 4, 4, 3],
-          borderColor: '#9a6900',
-          backgroundColor: 'rgba(154, 105, 0, 0.15)',
+          borderColor: '#c8961e',
+          backgroundColor: 'rgba(200, 150, 30, 0.08)',
           borderWidth: 2,
+          pointRadius: 3,
         },
         {
-          label: 'CPPIB (캐나다)',
+          label: 'CPPIB · 캐나다',
           data: [4, 3, 4, 2, 2],
-          borderColor: '#1e8449',
-          backgroundColor: 'rgba(30, 132, 73, 0.12)',
+          borderColor: '#1f6f6a',
+          backgroundColor: 'rgba(31, 111, 106, 0.06)',
           borderWidth: 2,
+          pointRadius: 3,
         },
         {
-          label: 'NPS (한국)',
+          label: 'NPS · 한국',
           data: [2, 2, 1, 1, 1],
-          borderColor: '#0f2342',
-          backgroundColor: 'rgba(15, 35, 66, 0.30)',
-          borderWidth: 3,
-          pointBackgroundColor: '#0f2342',
+          borderColor: '#0d1117',
+          backgroundColor: 'rgba(13, 17, 23, 0.20)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#0d1117',
+          pointRadius: 4,
         }
       ]
     },
     options: {
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 } } }
+        legend: {
+          position: 'bottom',
+          align: 'center',
+          labels: {
+            font: { family: "'IBM Plex Mono', monospace", size: 10, weight: '500' },
+            color: '#0d1117',
+            usePointStyle: true,
+            pointStyle: 'rect',
+            padding: 14,
+            boxWidth: 12,
+            boxHeight: 4,
+          }
+        },
+        tooltip: {
+          backgroundColor: '#0d1117',
+          titleFont: { family: "'IBM Plex Mono', monospace", size: 11 },
+          bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
+          padding: 10,
+          borderColor: '#c8961e',
+          borderWidth: 1,
+          cornerRadius: 1,
+        }
       },
       scales: {
         r: {
           beginAtZero: true,
           min: 0,
           max: 5,
-          ticks: { stepSize: 1, font: { size: 10 } },
-          pointLabels: { font: { size: 12, weight: '600' } },
-          grid: { color: '#d8e1ee' },
-          angleLines: { color: '#d8e1ee' }
+          ticks: {
+            stepSize: 1,
+            font: { family: "'IBM Plex Mono', monospace", size: 9 },
+            color: '#6c7682',
+            backdropColor: 'transparent'
+          },
+          pointLabels: {
+            font: { family: "'Pretendard', sans-serif", size: 13, weight: '600' },
+            color: '#0d1117'
+          },
+          grid: { color: 'rgba(13,17,23,0.08)' },
+          angleLines: { color: 'rgba(13,17,23,0.12)' }
         }
       }
     }

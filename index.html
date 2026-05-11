@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NPS ESG Watch — 국민연금 ESG 시민감시 대시보드 (프로토타입)</title>
+<meta name="description" content="가입자 알권리를 위한 국민연금 기금감시 ESG 리스크 조기탐지 대시보드. 박용환 / 경인블루저널 / 2026 연금행동 신진연구자 학술제 제출용 프로토타입.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #0f2342;
+    --navy-2: #1f3a68;
+    --blue: #1f4ea6;
+    --blue-soft: #e8eef7;
+    --red: #c0392b;
+    --amber: #9a6900;
+    --amber-soft: #fff3cd;
+    --green: #1e8449;
+    --gray: #6b7c93;
+    --bg: #f6f9fc;
+    --card: #ffffff;
+    --border: #d8e1ee;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: "Pretendard", "Malgun Gothic", "맑은 고딕", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: #1a1a1a;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* 상단 배너 */
+  .top-banner {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: #fff;
+    padding: 24px 32px;
+  }
+  .top-banner .row {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .top-banner h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .top-banner .sub {
+    font-size: 13px;
+    opacity: 0.85;
+  }
+  .top-banner .meta {
+    text-align: right;
+    font-size: 12px;
+    opacity: 0.85;
+  }
+  .top-banner .meta strong { color: #ffd166; }
+
+  .proto-tag {
+    display: inline-block;
+    background: #ffd166;
+    color: #0f2342;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  /* 컨테이너 */
+  .container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 24px 32px 60px;
+  }
+
+  /* KPI 스트립 */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    background: var(--blue);
+  }
+  .kpi.alert::before { background: var(--red); }
+  .kpi.warn::before { background: var(--amber); }
+  .kpi.ok::before { background: var(--green); }
+  .kpi .label {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+  .kpi .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.1;
+  }
+  .kpi .delta {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+  .kpi .delta.up { color: var(--red); font-weight: 600; }
+  .kpi .delta.down { color: var(--green); font-weight: 600; }
+
+  /* 모듈 그리드 */
+  .modules {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 3px rgba(15,35,66,0.04);
+  }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+  .card-head .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .card-head .badge {
+    font-size: 11px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .card-head .badge.red { background: #fde2e0; color: var(--red); }
+  .card-head .badge.amber { background: var(--amber-soft); color: var(--amber); }
+
+  /* 모듈 1: 리스크 신호 테이블 */
+  table.signal {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.signal th {
+    text-align: left;
+    color: var(--gray);
+    font-weight: 600;
+    padding: 8px 10px;
+    background: #f4f7fb;
+    border-bottom: 1px solid var(--border);
+  }
+  table.signal td {
+    padding: 10px;
+    border-bottom: 1px solid #eef2f8;
+  }
+  table.signal tr:last-child td { border-bottom: none; }
+  table.signal .firm { font-weight: 700; color: var(--navy); }
+  table.signal .sector { color: var(--gray); font-size: 11.5px; }
+  .risk-pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .risk-pill.high { background: #fde2e0; color: var(--red); }
+  .risk-pill.mid { background: var(--amber-soft); color: var(--amber); }
+  .risk-pill.low { background: #d4f1de; color: var(--green); }
+  .lead-time { font-size: 11px; color: var(--gray); }
+
+  /* 모듈 2: 평가기관 불일치 */
+  .divergence-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr 0.7fr;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eef2f8;
+    font-size: 13px;
+    align-items: center;
+  }
+  .divergence-row:first-child {
+    font-weight: 700;
+    color: var(--gray);
+    font-size: 11px;
+    background: #f4f7fb;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+  .divergence-row .firm { font-weight: 700; color: var(--navy); }
+  .grade {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #eef2f8;
+    color: var(--navy);
+  }
+  .grade.A { background: #d4f1de; color: var(--green); }
+  .grade.B { background: var(--amber-soft); color: var(--amber); }
+  .grade.C, .grade.D { background: #fde2e0; color: var(--red); }
+  .gap-pill {
+    background: var(--navy);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* 모듈 4: 시민감시 큐 */
+  .queue-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: #fafcff;
+  }
+  .queue-item .firm-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .queue-item .firm-name {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 14px;
+  }
+  .queue-item .signal-text {
+    font-size: 12.5px;
+    color: #444;
+    margin-bottom: 8px;
+  }
+  .queue-item .actions {
+    display: flex;
+    gap: 8px;
+  }
+  .btn {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--navy-2); }
+  .btn.ghost {
+    background: transparent;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+  }
+  .btn.ghost:hover { background: var(--blue-soft); }
+
+  /* 차트 컨테이너 */
+  .chart-wrap {
+    position: relative;
+    height: 260px;
+  }
+
+  /* 푸터 */
+  .footer {
+    max-width: 1240px;
+    margin: 40px auto 0;
+    padding: 24px 32px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray);
+    border-top: 1px solid var(--border);
+  }
+  .footer strong { color: var(--navy); }
+
+  @media (max-width: 900px) {
+    .modules { grid-template-columns: 1fr; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .top-banner .row { flex-direction: column; }
+    .top-banner .meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 상단 배너 -->
+<header class="top-banner">
+  <div class="row">
+    <div>
+      <h1>NPS ESG Watch <span class="proto-tag">프로토타입</span></h1>
+      <div class="sub">가입자 알권리를 위한 국민연금 기금감시 ESG 리스크 조기탐지 대시보드</div>
+    </div>
+    <div class="meta">
+      박용환 · 한양대학교 공학대학원 / 경인블루저널 발행인<br>
+      <strong>2026 연금행동 신진연구자 학술제 제출용</strong><br>
+      <span style="opacity:0.7;">데이터 갱신: 2026-05-11 (정적 시연용 더미 데이터)</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- KPI 스트립 -->
+  <section class="kpi-strip">
+    <div class="kpi alert">
+      <div class="label">⚠️ 오늘 탐지된 ESG 리스크 신호</div>
+      <div class="value">17</div>
+      <div class="delta up">전일 대비 +4</div>
+    </div>
+    <div class="kpi warn">
+      <div class="label">📊 평가기관 불일치 워치(KOSPI200)</div>
+      <div class="value">42<span style="font-size:14px;color:var(--gray);"> / 200</span></div>
+      <div class="delta">3사 등급 격차 ≥ 2단계</div>
+    </div>
+    <div class="kpi">
+      <div class="label">🗳️ 다음 의결권 시즌까지</div>
+      <div class="value">D-326</div>
+      <div class="delta">2027-04-01 정기주총</div>
+    </div>
+    <div class="kpi ok">
+      <div class="label">👥 시민감시 신청 건수</div>
+      <div class="value">128</div>
+      <div class="delta down">최근 7일 +12</div>
+    </div>
+  </section>
+
+  <!-- 모듈 그리드 -->
+  <section class="modules">
+
+    <!-- 모듈 1: 오늘의 ESG 리스크 신호 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="title">🚨 오늘의 ESG 리스크 신호 Top 5</div>
+        <span class="badge red">NLP 자동 탐지</span>
+      </div>
+      <table class="signal">
+        <thead>
+          <tr>
+            <th>기업</th>
+            <th>리스크</th>
+            <th>스코어</th>
+            <th>리드타임</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="firm">○○화학</div>
+              <div class="sector">소재 · KOSPI</div>
+            </td>
+            <td>환경(E) — 폐수 무단방류 의혹</td>
+            <td><span class="risk-pill high">0.91</span></td>
+            <td><span class="lead-time">KCGS 공고 -42일</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="firm">○○건설</div>
+              <div class="sector">건설 · KOSPI200</div>
+            </td>
+            <td>사회(S) — 중대재해 산재 연쇄</td>
+            <td><span class="risk-pill high">0.87</span></td>
+            <td><span class="lead-time">KCGS 공고 -28일</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="firm">○○지주</div>
+              <div class="sector">금융 · KOSPI</div>
+            </td>
+            <td>지배구조(G) — 총수 사익편취 의혹</td>
+            <td><span class="risk-pill mid">0.74</span></td>
+            <td><span class="lead-time">KCGS 공고 -19일</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="firm">○○전자</div>
+              <div class="sector">전기전자 · KOSPI200</div>
+            </td>
+            <td>사회(S) — 협력사 노동권 분쟁</td>
+            <td><span class="risk-pill mid">0.68</span></td>
+            <td><span class="lead-time">KCGS 공고 -12일</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="firm">○○물산</div>
+              <div class="sector">유통 · KOSPI</div>
+            </td>
+            <td>환경(E) — 탄소공시 부정확</td>
+            <td><span class="risk-pill low">0.55</span></td>
+            <td><span class="lead-time">KCGS 공고 -7일</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px; color:var(--gray); margin-top:10px;">
+        ※ NLP 모형(EXAONE 3.5 + ESG-Kor + BERTopic)이 DART 공시·빅카인즈 보도에서 추출한 신호. 오탐 시 시민단체 모니터 추가 검증 큐로만 분류(human-in-the-loop).
+      </p>
+    </div>
+
+    <!-- 모듈 2: 평가기관 불일치 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="title">📊 평가기관 등급 불일치 워치</div>
+        <span class="badge amber">KCGS · Sustinvest · MSCI</span>
+      </div>
+      <div class="divergence-row">
+        <div>기업</div><div>KCGS</div><div>Sustinvest</div><div>MSCI</div><div>격차</div>
+      </div>
+      <div class="divergence-row">
+        <div class="firm">○○화학</div>
+        <div><span class="grade B">B+</span></div>
+        <div><span class="grade D">D</span></div>
+        <div><span class="grade B">BB</span></div>
+        <div><span class="gap-pill">3단계</span></div>
+      </div>
+      <div class="divergence-row">
+        <div class="firm">○○건설</div>
+        <div><span class="grade B">B</span></div>
+        <div><span class="grade C">C+</span></div>
+        <div><span class="grade C">CCC</span></div>
+        <div><span class="gap-pill">2단계</span></div>
+      </div>
+      <div class="divergence-row">
+        <div class="firm">○○지주</div>
+        <div><span class="grade A">A</span></div>
+        <div><span class="grade B">B</span></div>
+        <div><span class="grade A">A</span></div>
+        <div><span class="gap-pill">2단계</span></div>
+      </div>
+      <div class="divergence-row">
+        <div class="firm">○○전자</div>
+        <div><span class="grade A">A+</span></div>
+        <div><span class="grade A">A</span></div>
+        <div><span class="grade B">BBB</span></div>
+        <div><span class="gap-pill">2단계</span></div>
+      </div>
+      <p style="font-size:11px; color:var(--gray); margin-top:10px;">
+        ※ 등급 격차 ≥ 2단계 기업은 NLP 모형의 우선 모니터링 대상으로 분류 (선행연구: Berg et al. 2022, <i>Review of Finance</i>).
+      </p>
+    </div>
+
+    <!-- 모듈 3: NPS 의결권 패턴 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="title">🗳️ NPS 의결권 패턴 (2018~2025)</div>
+        <span class="badge">DID + PSM 분석</span>
+      </div>
+      <div class="chart-wrap"><canvas id="voteChart"></canvas></div>
+      <p style="font-size:11px; color:var(--gray); margin-top:10px;">
+        ※ 2019년 「책임투자 활성화 방안」 도입(빨간 점선)을 처치(treatment)로 본 DID 설계. ESG 안건 반대표 비율이 처치 후 상승 추세.
+      </p>
+    </div>
+
+    <!-- 모듈 4: 시민감시 큐 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="title">👥 시민감시 큐 (활성)</div>
+        <span class="badge">human-in-the-loop</span>
+      </div>
+
+      <div class="queue-item">
+        <div class="firm-line">
+          <span class="firm-name">○○화학 — 환경(E)</span>
+          <span class="risk-pill high">High 0.91</span>
+        </div>
+        <div class="signal-text">2026-04-22 DART 자율공시 + 5월 1일 ○○일보 보도에서 폐수 무단방류 관련 키워드 클러스터 급증. 시민단체 검증 대기 중.</div>
+        <div class="actions">
+          <button class="btn">감시 신청</button>
+          <button class="btn ghost">출처 보기</button>
+        </div>
+      </div>
+
+      <div class="queue-item">
+        <div class="firm-line">
+          <span class="firm-name">○○건설 — 사회(S)</span>
+          <span class="risk-pill high">High 0.87</span>
+        </div>
+        <div class="signal-text">최근 90일간 산재 관련 보도 12건, 노동조합 성명 3건 탐지. PPA·공공운수노조 국민연금지부 검토 대기.</div>
+        <div class="actions">
+          <button class="btn">감시 신청</button>
+          <button class="btn ghost">출처 보기</button>
+        </div>
+      </div>
+
+      <div class="queue-item">
+        <div class="firm-line">
+          <span class="firm-name">○○지주 — 지배구조(G)</span>
+          <span class="risk-pill mid">Mid 0.74</span>
+        </div>
+        <div class="signal-text">2026 정기주총 안건 중 총수 일가 배당 관련 안건 발의. 가입자·시민단체 의결권 캠페인 후보.</div>
+        <div class="actions">
+          <button class="btn">감시 신청</button>
+          <button class="btn ghost">출처 보기</button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 글로벌 비교 차트 -->
+  <section class="card" style="margin-top:20px;">
+    <div class="card-head">
+      <div class="title">🌐 글로벌 연기금 ESG 거버넌스 비교 (5축 방사형)</div>
+      <span class="badge">정책 텍스트 비교분석</span>
+    </div>
+    <div class="chart-wrap" style="height:340px;"><canvas id="radarChart"></canvas></div>
+    <p style="font-size:11px; color:var(--gray); margin-top:10px;">
+      ※ GPFG(노)·CalPERS(미)·ABP(네)·CPPIB(캐)·NPS(한)의 ESG 거버넌스 5개 차원 잠정 정성평가. 본 연구에서 정량화·검증 예정. NPS는 전 축 최하위 — 본 연구의 정책 제언이 메우려는 격차.
+    </p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p><strong>NPS ESG Watch</strong> · 박용환 · 한양대학교 공학대학원 · 경인블루저널</p>
+  <p style="margin-top:6px;">2026 연금행동 신진연구자 학술제 제출용 정적 프로토타입 (더미 데이터). MIT License · GitHub 저장소 공개 예정.</p>
+  <p style="margin-top:6px; font-size:11px;">본 대시보드는 학술제 발표 시점(2026.12)에 라이브 데이터로 갱신되며, 가입자·시민단체·노동조합이 의결권 행사 시즌(매년 3~4월)에 활용할 수 있는 형태로 운영됩니다.</p>
+</footer>
+
+<script>
+  // 모듈 3: NPS 의결권 패턴 (2018~2025)
+  const ctxVote = document.getElementById('voteChart').getContext('2d');
+  new Chart(ctxVote, {
+    type: 'line',
+    data: {
+      labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
+      datasets: [
+        {
+          label: 'ESG 안건 반대표 비율(%)',
+          data: [8.2, 11.4, 14.7, 18.3, 21.5, 23.1, 24.8, 26.2],
+          borderColor: '#1f4ea6',
+          backgroundColor: 'rgba(31, 78, 166, 0.10)',
+          fill: true,
+          tension: 0.35,
+          borderWidth: 3,
+        },
+        {
+          label: '주주제안 가결률(%)',
+          data: [3.1, 4.8, 6.2, 8.9, 11.2, 12.8, 14.1, 15.7],
+          borderColor: '#1e8449',
+          backgroundColor: 'rgba(30, 132, 73, 0.08)',
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2.5,
+          borderDash: [4, 3],
+        }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        annotation: {}
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 30,
+          ticks: { font: { size: 10 } },
+          title: { display: true, text: '비율 (%)', font: { size: 11 } }
+        },
+        x: { ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+
+  // 글로벌 비교 방사형
+  const ctxRadar = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctxRadar, {
+    type: 'radar',
+    data: {
+      labels: ['ESG 공시', '의결권', '관여(Engagement)', '배제 정책', '시민감시'],
+      datasets: [
+        {
+          label: 'GPFG (노르웨이)',
+          data: [5, 5, 4, 5, 4],
+          borderColor: '#1f4ea6',
+          backgroundColor: 'rgba(31, 78, 166, 0.18)',
+          borderWidth: 2,
+        },
+        {
+          label: 'CalPERS (미국)',
+          data: [4, 5, 5, 3, 4],
+          borderColor: '#c0392b',
+          backgroundColor: 'rgba(192, 57, 43, 0.15)',
+          borderWidth: 2,
+        },
+        {
+          label: 'ABP (네덜란드)',
+          data: [4, 4, 4, 4, 3],
+          borderColor: '#9a6900',
+          backgroundColor: 'rgba(154, 105, 0, 0.15)',
+          borderWidth: 2,
+        },
+        {
+          label: 'CPPIB (캐나다)',
+          data: [4, 3, 4, 2, 2],
+          borderColor: '#1e8449',
+          backgroundColor: 'rgba(30, 132, 73, 0.12)',
+          borderWidth: 2,
+        },
+        {
+          label: 'NPS (한국)',
+          data: [2, 2, 1, 1, 1],
+          borderColor: '#0f2342',
+          backgroundColor: 'rgba(15, 35, 66, 0.30)',
+          borderWidth: 3,
+          pointBackgroundColor: '#0f2342',
+        }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } }
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          min: 0,
+          max: 5,
+          ticks: { stepSize: 1, font: { size: 10 } },
+          pointLabels: { font: { size: 12, weight: '600' } },
+          grid: { color: '#d8e1ee' },
+          angleLines: { color: '#d8e1ee' }
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

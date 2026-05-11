@@ -951,6 +951,16 @@
   .reveal-5 { animation-delay: 0.45s; }
   .reveal-6 { animation-delay: 0.55s; }
 
+  /* Reduced motion / screenshot capture safe */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+      animation: none !important;
+    }
+    .masthead-strip .live::before { animation: none !important; }
+  }
+
   /* Responsive */
   @media (max-width: 1000px) {
     .modules { grid-template-columns: 1fr; gap: 40px; }
